@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="graph.css" />
+    <script src="graph.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="graph"></div>
+    </div>
+    <script>
+      var graph = new jLineGraph(document.getElementById("graph"), {
+        title: "Indikatoren Fälle 2022",
+        labels: [
+          "JAN",
+          "FEB",
+          "MAR",
+          "APR",
+          "MAI",
+          "JUN",
+          "JUL",
+          "AUG",
+          "SEP",
+          "OCT",
+          "NOV",
+          "DEC",
+        ],
+        datasets: [
+          {
+            type: "line",
+            label: "Fälle",
+            data: [-40, 80, 10, 60, 100, 120, 250, 910, 10, 30, 240, 320],
+            primaryColor: "blue",
+            secondaryColor: "lightblue",
+            fill: true
+          }
+        ],
+      });
+  </script>
+  </body>
+</html>
