@@ -63,7 +63,6 @@ var jLineGraph = function (element, options) {
                   return;
                 }
               });
-              //return 100 * Math.floor(min / 100);
               return min;
             })(),
           max:
@@ -77,7 +76,6 @@ var jLineGraph = function (element, options) {
                   return;
                 }
               });
-              //return 100 * Math.ceil(max / 100);
               return max;
             })(),
         },
@@ -244,7 +242,7 @@ var jLineGraph = function (element, options) {
       for (var i = 0; i < chart_items.length; i++) {
         var element = chart_items[i];
         var style = element.computedStyleMap();
-        
+
         var x = (style.get("--x") / max_value_x) * width;
         var y = (style.get("--y") / max_value_y) * height;
 
