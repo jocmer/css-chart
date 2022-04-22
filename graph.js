@@ -115,57 +115,6 @@ var jLineGraph = function (element, options) {
 
       // Normalize coordinate system to use css pixels.
       ctx.scale(scale, scale);
-
-      // Curvey left sail
-      ctx.beginPath();
-      ctx.lineWidth = 5;
-
-      var max_x = this.options.scales.xAxis.max;
-      var max_y = this.options.scales.yAxis.max;
-      var range = this.options.scales.yAxis.range;
-
-      var datasets = this.datasets;
-
-      var offset_y = ((range - max_y) / range) * overlay.height;
-      for (var j = 0; j < datasets.length; j++) {
-        var data = datasets[j].data;
-
-        var x = (0 / max_x) * overlay.width;
-        var y = overlay.height - offset_y - (data[0] / range) * overlay.height;
-
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-
-        for (var i = 1; i < max_x; i++) {
-          //coordinates
-          x = (i / max_x) * overlay.width;
-          y = overlay.height - offset_y - (data[i] / range) * overlay.height;
-
-          var x2 = ((i + 1) / max_x) * overlay.width;
-          var y2 =
-            overlay.height - offset_y - (data[i + 1] / range) * overlay.height;
-
-          //control points
-          var cx = (x + x2) / 2;
-          var cy = (y + y2) / 2;
-
-          //ctx.lineTo(x2, y2);
-          ctx.quadraticCurveTo(x, y, cx, cy);
-          //ctx.bezierCurveTo(cx, cy, cx2, cy2, x2, y2);
-          ctx.strokeStyle = datasets[j].primaryColor;
-          ctx.stroke();
-
-          /*ctx.beginPath();
-          ctx.rect(cx, cy, 5, 5);
-          ctx.fillStyle = "#000000";
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.rect(cx2, cy2, 5, 5);
-          ctx.fillStyle = "#000000";
-          ctx.fill();*/
-        }
-      }
     },
     renderLine: function (dataset, index) {
       var ul = document.createElement("ul");
@@ -238,51 +187,64 @@ var jLineGraph = function (element, options) {
         Math.abs(this.options.scales.yAxis.max);
 
       //new code
-      var chart_items = this.element.querySelectorAll("ul.line-chart li");
-      for (var i = 0; i < chart_items.length; i++) {
-        var element = chart_items[i];
-        var style = element.computedStyleMap();
+      var charts = this.element.querySelectorAll("ul.line-chart");
 
-        var x = (style.get("--x") / max_value_x) * width;
-        var y = (style.get("--y") / max_value_y) * height;
+      for (var j = 0; j < charts.length; j++) {
+        var chart = charts[j];
 
-        var nextElement = chart_items[i + 1];
-        if (nextElement) {
-          var styleNext = nextElement.computedStyleMap();
+        var chart_items = chart.querySelectorAll("li");
+        for (var i = 0; i < chart_items.length; i++) {
+          var element = chart_items[i];
+          var style = element.computedStyleMap();
 
-          var x2 = (styleNext.get("--x") / max_value_x) * width;
-          var y2 = (styleNext.get("--y") / max_value_y) * height;
+          var x = (style.get("--x") / max_value_x) * width;
+          var y = (style.get("--y") / max_value_y) * height;
 
-          var diff_x = x - x2;
-          var diff_y = y - y2;
+          var nextElement = chart_items[i + 1];
+          if (nextElement) {
+            var styleNext = nextElement.computedStyleMap();
 
-          var hypo = Math.hypot(diff_x, diff_y);
-          if (hypo) {
-            var lineSegment = element.getElementsByClassName("line-segment")[0];
-            lineSegment.style.setProperty("--a", diff_x);
-            lineSegment.style.setProperty("--c", diff_y);
-            lineSegment.style.setProperty("--hypotenuse", hypo.toString());
+            var x2 = (styleNext.get("--x") / max_value_x) * width;
+            var y2 = (styleNext.get("--y") / max_value_y) * height;
 
-            var angle = (Math.asin(diff_y / hypo) * 180) / Math.PI;
-            lineSegment.style.setProperty("--angle", angle.toString());
+            var diff_x = x - x2;
+            var diff_y = y - y2;
 
-            var lineCurtain = element.getElementsByClassName("line-fill")[0];
-            if (lineCurtain) {
-              lineCurtain.style.setProperty("--a", `${diff_x}px`);
-              lineCurtain.style.setProperty("--c", `${diff_y}px`);
+            var hypo = Math.hypot(diff_x, diff_y);
+            if (hypo) {
+              var lineSegment =
+                element.getElementsByClassName("line-segment")[0];
+              lineSegment.style.setProperty("--a", diff_x);
+              lineSegment.style.setProperty("--c", diff_y);
+              lineSegment.style.setProperty("--hypotenuse", hypo.toString());
 
-              var lineCurtainTri =
-                element.getElementsByClassName("line-fill-tri")[0];
+              var angle = (Math.asin(diff_y / hypo) * 180) / Math.PI;
+              lineSegment.style.setProperty("--angle", angle.toString());
 
-              lineCurtainTri.style.setProperty("--a", `${diff_x}px`);
-              lineCurtainTri.style.setProperty("--aa", `${Math.abs(diff_x)}px`);
-              lineCurtainTri.style.setProperty("--c", `${diff_y}px`);
-              lineCurtainTri.style.setProperty("--ac", `${Math.abs(diff_y)}px`);
+              var lineCurtain = element.getElementsByClassName("line-fill")[0];
+              if (lineCurtain) {
+                lineCurtain.style.setProperty("--a", `${diff_x}px`);
+                lineCurtain.style.setProperty("--c", `${diff_y}px`);
 
-              if (diff_y > 0) {
-                lineCurtainTri.classList.add("left");
-              } else {
-                lineCurtainTri.classList.add("right");
+                var lineCurtainTri =
+                  element.getElementsByClassName("line-fill-tri")[0];
+
+                lineCurtainTri.style.setProperty("--a", `${diff_x}px`);
+                lineCurtainTri.style.setProperty(
+                  "--aa",
+                  `${Math.abs(diff_x)}px`
+                );
+                lineCurtainTri.style.setProperty("--c", `${diff_y}px`);
+                lineCurtainTri.style.setProperty(
+                  "--ac",
+                  `${Math.abs(diff_y)}px`
+                );
+
+                if (diff_y > 0) {
+                  lineCurtainTri.classList.add("left");
+                } else {
+                  lineCurtainTri.classList.add("right");
+                }
               }
             }
           }
