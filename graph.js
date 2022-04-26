@@ -16,6 +16,7 @@ var jLineGraph = function (element, options) {
       this.datasets = options.datasets || [];
 
       this.title = options.title || "";
+      this.type = options.type || "grid";
 
       this.options.grouped = options.grouped || false;
       var grid = options.grid || {};
@@ -416,6 +417,48 @@ var jLineGraph = function (element, options) {
         footer.appendChild(footerContent);
       }
 
+      switch(this.type) {
+        case "grid":
+          this.renderGrid(content);
+          break;
+        case "pie":
+          this.renderPie(content);
+          break;
+      }
+
+      
+    },
+
+    renderPie: function(content) {
+
+      var width = content.clientWidth;
+      var height = content.clientHeight;
+
+      var pie = document.createElement("div");
+      pie.classList.add("pie-chart");
+      content.appendChild(pie);
+
+      var count = 0;
+      var offset = 0;
+      this.datasets.forEach(function(dataset, index) {
+
+        count = count + dataset.data[0];
+
+        var item = document.createElement("div");
+        item.classList.add("chart");
+        item.classList.add("item");
+        item.setAttribute('style', `--offset:${offset};--primary-color: ${dataset.primaryColor};--secondary-color: ${dataset.secondaryColor};--value:${dataset.data[0]}`);
+        pie.appendChild(item);
+
+        offset = offset + dataset.data[0];
+
+      });
+
+      pie.setAttribute("style", `--pie-width:${Math.min(width,height)};--pie-height:${Math.min(height,width)};--sum:${count};--b:40%;`);
+    
+    },
+
+    renderGrid: function (content) {
       //X-Axis
       if (this.options.scales.xAxis.visible) {
         var xAxis = document.createElement("ul");
@@ -522,14 +565,6 @@ var jLineGraph = function (element, options) {
         content.appendChild(ygrid);
       }
 
-      //add overlay
-      /*var overlay = document.createElement("canvas");
-      overlay.setAttribute("id", "overlay");
-      overlay.classList.add("overlay");
-      content.appendChild(overlay);
-
-      this.renderOverlay(overlay);*/
-
       //render bars
       this.datasets
         .filter(function (dataset) {
@@ -553,8 +588,6 @@ var jLineGraph = function (element, options) {
             content.appendChild(line);
           }.bind(this)
         );
-
-      this.renderPointLine();
 
       new ResizeObserver(this.renderPointLine.bind(this)).observe(this.element);
     },

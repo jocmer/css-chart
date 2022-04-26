@@ -473,3 +473,38 @@ body, html {
 .css-chart-ygrid.centered li {
   left: calc(var(--i) * var(--grid-width) / var(--max-x-value));
 }
+
+.pie-chart {
+  margin-left: 0 auto;
+  margin-right: 0 auto;
+  width: calc(var(--pie-width) * 1px);
+  height: calc(var(--pie-height) * 1px);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  position: relative;
+  display: inline-grid;
+  place-content: center;
+}
+
+.pie-chart .item {
+  --percentage: calc(var(--value) / var(--sum) * 100%);
+
+  position: absolute;
+  border-radius: 50%;
+  inset: 0;
+  transform: rotate(calc(360deg * (var(--offset) / var(--sum))));
+  background: conic-gradient(var(--primary-color) calc(var(--percentage)),#0000 0);
+  opacity: 0.9;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.pie-chart .item:hover {
+  opacity: 0.7;
+  margin: 10px;
+}
+
+
+.pie-chart .item.disabled {
+  visibility: hidden;
+}

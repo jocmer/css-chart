@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="graph.css" />
+    <script src="util.js"></script>
+    <script src="graph.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="graph"></div>
+    </div>
+    <script>
+      var graph = new jLineGraph(document.getElementById("graph"), {
+        title: "Example Chart",
+        type: "pie",
+        datasets: [
+          {
+            label: "Amerika",
+            data: [150],
+            primaryColor: "red",
+            secondaryColor: "orange"
+          },
+          {
+            label: "Europa",
+            data: [150],
+            primaryColor: "blue",
+            secondaryColor: "lightblue"
+          },
+          {
+            label: "Asien",
+            data: [300],
+            primaryColor: "green",
+            secondaryColor: "lightgreen"
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>
