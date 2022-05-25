@@ -65,6 +65,11 @@ body, html {
   overflow: hidden;
 }
 
+.wrapper {
+  height: 100%;
+  padding: 0px 50px 50px 50px;
+}
+
 .overlay {
   position: absolute;
   left: 0;
@@ -73,16 +78,16 @@ body, html {
   height: 100%;
 }
 
-.css-chart-header {
+.css-chart .header {
   text-align: center;
   padding: 5px 5px;
 }
 
-.css-chart-header .title {
+.css-chart .header .title {
   
 }
 
-.legend {
+.css-chart .header .legend {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -92,12 +97,12 @@ body, html {
   font-size: 11px;
 }
 
-.legend .item {
+.css-chart .header .legend .item {
   padding: 2px 2px;
   cursor: pointer;
 }
 
-.legend .item .color {
+.css-chart .header .legend .item .color {
   float: left;
   width: 24px;
   height: 11px;
@@ -105,32 +110,27 @@ body, html {
   opacity: 0.6;
 }
 
-.legend .item.disabled .color {
+.css-chart .header .legend .item.disabled .color {
   background: lightgray !important;
   border: 1px solid black !important;
 }
 
-.legend .item .label {
+.css-chart .header .legend .item .label {
   float: left;
   font-weight: bold;
 }
 
-.legend .item.disabled .label {
+.css-chart .header .legend .item.disabled .label {
   text-decoration: line-through;
 }
 
-.css-chart-footer {
+.css-chart .footer {
   bottom: 0;
   left: 0;
   text-align: center;
 }
 
-.css-chart-wrapper {
-  height: 100%;
-  padding: 0px 50px 50px 50px;
-}
-
-.css-chart-content {
+.css-chart .content {
   width: 100%;
   height: 100%;
 
@@ -139,18 +139,18 @@ body, html {
   position: relative;
 }
 
-.bar-chart {
+.css-chart .bar-chart {
   --offset-y: calc((var(--range) - var(--max-y-value)) / var(--range) * var(--grid-height));
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.bar-chart.disabled {
+.css-chart .bar-chart.disabled {
   display: none;
 }
 
-.bar-chart li {
+.css-chart .bar-chart div {
   --py: 100;
   --width: calc((var(--grid-width) / var(--max-x-value) - 20px) / var(--items));
   position: absolute;
@@ -164,14 +164,14 @@ body, html {
   animation: grow 1s ease-out;
 }
 
-.bar-chart li.negative {
+.css-chart .bar-chart div.negative {
   --height: calc((var(--y) * (var(--py) / 100)) * -1 / var(--range) * var(--grid-height));
   bottom: calc(var(--offset-y) + var(--height) * -1) !important;
   height: var(--height) !important;
   animation: grow2 1s ease-out !important;
 }
 
-.bar-chart.grouped li {
+.css-chart .bar-chart.grouped div {
   --width: calc(var(--grid-width) / var(--max-x-value) - 20px);
   position: absolute;
   opacity: var(--opacity);
@@ -184,7 +184,7 @@ body, html {
   animation: grow 1s ease-out;
 }
 
-.bar-chart li:hover::before {
+.css-chart .bar-chart div:hover::before {
   content: attr(data-label) " " attr(data-value);
   padding: 5px;
   color: white;
@@ -199,20 +199,20 @@ body, html {
   opacity: 1.0;
 }
 
-.bar-chart li.negative:hover::before {
+.css-chart .bar-chart div.negative:hover::before {
   top: unset !important;
   bottom: -50px;
   opacity: 1.0;
 }
 
-.line-chart {
+.css-chart .line-chart {
   --offset-y: calc((var(--range) - var(--max-y-value)) / var(--range) * var(--grid-height));
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.line-chart.disabled {
+.css-chart .line-chart.disabled {
   display: none;
 }
 
@@ -225,7 +225,7 @@ body, html {
   }
 }
 
-.line-chart .data-point {
+.css-chart .line-chart .data-point {
   background: var(--secondary-color);
   border: 2px solid var(--primary-color);
   border-radius: 50%;
@@ -243,17 +243,17 @@ body, html {
   z-index: 1000;
 }
 
-.line-chart .data-point:hover {
+.css-chart .line-chart .data-point:hover {
   width: 15px;
   height: 15px;
   cursor: pointer;
 }
 
-.line-chart.centered .data-point {
+.css-chart.centered .line-chart .data-point {
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width) - 6px + var(--grid-width) / 12 / 2) !important;
 }
 
-.line-chart .data-point:hover::before {
+.css-chart .line-chart .data-point:hover::before {
   transition: 0.2s;
   content: attr(data-label) " " attr(data-value);
   color: var(--primary-color);
@@ -281,7 +281,7 @@ body, html {
   }
 }
 
-.line-chart .line-segment {
+.css-chart .line-chart .line-segment {
   background: var(--primary-color);
   opacity: var(--opacity);
 
@@ -301,17 +301,17 @@ body, html {
   z-index: 900;
 }
 
-.line-chart .line-segment:hover {
+.css-chart .line-chart .line-segment:hover {
   cursor: pointer;
   height: 3px;
   opacity: 1;
 }
 
-.line-chart.centered .line-segment {
+.css-chart.centered .line-chart .line-segment {
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width) + var(--grid-width) / 12 / 2) !important;
 }
 
-.line-chart .line-fill {
+.css-chart .line-chart .line-fill {
   position: absolute;
   bottom: 0;
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width));
@@ -324,11 +324,11 @@ body, html {
   opacity: 0.5;
 }
 
-.line-chart.centered .line-fill {
+.css-chart.centered .line-chart .line-fill {
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width) + var(--grid-width) / 12 / 2) !important;
 }
 
-.line-chart .line-fill-tri {
+.css-chart .line-chart .line-fill-tri {
   position: absolute;
 
   bottom: calc(var(--offset-y) + var(--y) / var(--range) * var(--grid-height) - max(0px, var(--c)));
@@ -346,11 +346,11 @@ body, html {
   opacity: 0.5;
 }
 
-.line-chart.centered .line-fill-tri {
+.css-chart.centered .line-chart .line-fill-tri {
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width) + var(--grid-width) / 12 / 2) !important;
 }
 
-.line-chart .line-fill-tri.left {
+.css-chart .line-chart .line-fill-tri.left {
   border-color: transparent transparent transparent var(--primary-color);
   border-style: solid;
   border-width: var(--height) 0px 0px var(--width);
@@ -358,7 +358,7 @@ body, html {
   width: 0px;
 }
 
-.line-chart .line-fill-tri.right {
+.css-chart .line-chart .line-fill-tri.right {
   border-color: transparent var(--primary-color) transparent transparent;
     border-style: solid;
     border-width: var(--height) var(--width) 0px 0px;
@@ -366,11 +366,11 @@ body, html {
     width: 0px;
 }
 
-.css-chart-xaxis {
+.css-chart .xaxis {
   list-style: none;
 }
 
-.css-chart-xaxis li {
+.css-chart .xaxis div {
   font-size: 80%;
   position: absolute;
   bottom: -25px;
@@ -382,11 +382,11 @@ body, html {
   );
 }
 
-.css-chart-xaxis.centered li {
+.css-chart.centered .xaxis div {
   left: calc((var(--i) * var(--grid-width) / var(--labels))) !important;
 }
 
-.css-chart-xaxis li:before {
+.css-chart .xaxis div:before {
   content: "";
   position: absolute;
   bottom: 20px;
@@ -395,22 +395,22 @@ body, html {
   background: var(--gridcolor);
 }
 
-.css-chart-xaxis li:before {
+.css-chart .xaxis div:before {
   left: calc(50%);
 }
 
-.css-chart-xaxis.centered li:before {
+.css-chart.centered .xaxis div:before {
   left: 0 !important;
 }
 
-.css-chart-xaxis li:first-child::before {
+.css-chart .xaxis div:first-child::before {
 }
 
-.css-chart-yaxis {
+.css-chart .yaxis {
   list-style: none;
 }
 
-.css-chart-yaxis li {
+.css-chart .yaxis div {
   z-index: -1;
   font-size: 80%;
   position: absolute;
@@ -419,7 +419,7 @@ body, html {
   height: 20px;
 }
 
-.css-chart-yaxis li:before {
+.css-chart .yaxis div:before {
   z-index: -1;
   content: "";
   position: absolute;
@@ -430,14 +430,14 @@ body, html {
   background: var(--gridcolor);
 }
 
-.css-chart-yaxis li:first-child::before {
+.css-chart .yaxis div:first-child::before {
 }
 
-.css-chart-xgrid {
+.css-chart .xgrid {
   list-style: none;
 }
 
-.css-chart-xgrid li {
+.css-chart .xgrid div {
   z-index: -1;
   position: absolute;
   left: 0;
@@ -447,16 +447,16 @@ body, html {
   background: var(--gridcolor);
 }
 
-.css-chart-xgrid li.thicc {
+.css-chart .xgrid div.thicc {
   height: 2px !important;
 }
 
 
-.css-chart-ygrid {
+.css-chart .ygrid {
   list-style: none;
 }
 
-.css-chart-ygrid li {
+.css-chart .ygrid div {
   z-index: -1;
   position: absolute;
   bottom: 0;
@@ -466,15 +466,15 @@ body, html {
   background: var(--gridcolor);
 }
 
-.css-chart-ygrid li.thicc {
+.css-chart .ygrid div.thicc {
   width: 2px !important;
 }
 
-.css-chart-ygrid.centered li {
+.css-chart.centered .ygrid div {
   left: calc(var(--i) * var(--grid-width) / var(--max-x-value));
 }
 
-.pie-chart {
+.css-chart .pie-chart {
   margin-left: 0 auto;
   margin-right: 0 auto;
   width: calc(var(--pie-width) * 1px);
@@ -486,7 +486,7 @@ body, html {
   place-content: center;
 }
 
-.pie-chart .item {
+.css-chart .pie-chart div {
   --percentage: calc(var(--value) / var(--sum) * 100%);
 
   position: absolute;
@@ -499,12 +499,12 @@ body, html {
   cursor: pointer;
 }
 
-.pie-chart .item:hover {
+.css-chart .pie-chart div:hover {
   opacity: 0.7;
   margin: 10px;
 }
 
 
-.pie-chart .item.disabled {
+.css-chart .pie-chart div.disabled {
   visibility: hidden;
 }

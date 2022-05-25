@@ -3,49 +3,62 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="graph.css" />
-    <script src="util.js"></script>
     <script src="graph.js"></script>
   </head>
   <body>
     <div class="container">
-      <div id="graph"></div>
+        <div class="css-chart centered" data-min-value="-100" data-max-value="1000">
+            <div class="header">
+                <div class="title">Test Titel</div>
+                <div class="legend"></div>
+            </div>
+            <div class="content">
+                <div class="xaxis">
+                    <div>JAN</div>
+                    <div>FEB</div>
+                    <div>MAR</div>
+                    <div>APR</div>
+                    <div>MAI</div>
+                    <div>JUN</div>
+                    <div>JUL</div>
+                    <div>AUG</div>
+                    <div>SEP</div>
+                    <div>OCT</div>
+                    <div>NOV</div>
+                    <div>DEC</div>
+                </div>
+                <div class="yaxis" data-steps="100">
+                    
+                </div>
+                <div class="xgrid">
+
+                </div>
+                <div class="ygrid">
+
+                </div>
+                <div class="bar-chart" data-label="Fälle" data-primary-color="red" data-secondary-color="orange">
+                    <div data-value="500"></div>
+                    <div data-value="200"></div>
+                    <div data-value="900"></div>
+                    <div data-value="200"></div>
+                    <div data-value="500"></div>
+                    <div data-value="600"></div>
+                    <div data-value="300"></div>
+                    <div data-value="500"></div>
+                    <div data-value="700"></div>
+                    <div data-value="200"></div>
+                    <div data-value="100"></div>
+                    <div data-value="10"></div>
+                </div>
+                <div class="bar-chart" data-label="Incidents" data-primary-color="blue" data-secondary-color="lightblue">
+                    <div data-value="-100"></div>
+                    <div data-value="300"></div>
+                </div>
+            </div>
+            <div class="footer">
+
+            </div>
+        </div>
     </div>
-    <script>
-      var graph = new jLineGraph(document.getElementById("graph"), {
-        title: "Example Chart",
-        labels: [
-          "JAN",
-          "FEB",
-          "MAR",
-          "APR",
-          "MAI",
-          "JUN",
-          "JUL",
-          "AUG",
-          "SEP",
-          "OCT",
-          "NOV",
-          "DEC",
-        ],
-        datasets: [
-          {
-            type: "line",
-            label: "Incidents",
-            data: randArray(0, 1000, 12),
-            primaryColor: "red",
-            secondaryColor: "orange",
-            fill: true,
-          },
-          {
-            type: "line",
-            label: "Fälle",
-            data: [-40, 80, 10, 60, 100, 120, 250, 910, 10, 30, 240, 320],
-            primaryColor: "blue",
-            secondaryColor: "lightblue",
-            fill: true,
-          }
-        ]
-      });
-    </script>
   </body>
-</html>
+  </html>
