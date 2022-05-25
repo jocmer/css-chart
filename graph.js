@@ -19,8 +19,8 @@ var jGraph = function (element) {
       var secondaryColor =
         chart.getAttribute("data-secondary-color") || "black";
       var opacity = chart.getAttribute("data-opacity") || 1.0;
-      var segment = chart.getAttribute("segment") || true;
-      var fill = chart.getAttribute("fill") || false;
+      var segment = chart.getAttribute("data-segment") || true;
+      var fill = chart.getAttribute("data-fill") || false;
 
       chart.setAttribute(
         "style",

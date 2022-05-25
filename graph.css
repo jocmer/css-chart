@@ -239,8 +239,7 @@ body, html {
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width) - 6px);
 
   animation: point 0.5s ease-in;
-
-  z-index: 1000;
+  z-index: 1;
 }
 
 .css-chart .line-chart .data-point:hover {
@@ -298,7 +297,6 @@ body, html {
 
   animation: fade 1s ease-in-out;
 
-  z-index: 900;
 }
 
 .css-chart .line-chart .line-segment:hover {
@@ -320,7 +318,6 @@ body, html {
   background: var(--primary-color);
   animation: fade 1s ease-in-out;
 
-  z-index: 800;
   opacity: 0.5;
 }
 
@@ -342,7 +339,6 @@ body, html {
   
   animation: fade 1s ease-in-out;
 
-  z-index: 800;
   opacity: 0.5;
 }
 

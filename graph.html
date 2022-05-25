@@ -7,7 +7,7 @@
   </head>
   <body>
     <div class="container">
-        <div class="css-chart centered" data-min-value="-100" data-max-value="1000">
+        <div class="css-chart" data-min-value="-100" data-max-value="1000">
             <div class="header">
                 <div class="title">Test Titel</div>
                 <div class="legend"></div>
@@ -36,7 +36,7 @@
                 <div class="ygrid">
 
                 </div>
-                <div class="bar-chart" data-label="Fälle" data-primary-color="red" data-secondary-color="orange">
+                <div class="line-chart" data-label="Fälle" data-primary-color="red" data-secondary-color="orange" data-fill="true">
                     <div data-value="500"></div>
                     <div data-value="200"></div>
                     <div data-value="900"></div>
@@ -50,9 +50,11 @@
                     <div data-value="100"></div>
                     <div data-value="10"></div>
                 </div>
-                <div class="bar-chart" data-label="Incidents" data-primary-color="blue" data-secondary-color="lightblue">
-                    <div data-value="-100"></div>
-                    <div data-value="300"></div>
+                <div class="line-chart" data-label="Incidents" data-primary-color="lightblue" data-secondary-color="green" data-fill="true">
+                    <div data-value="-50"></div>
+                    <div data-value="340"></div>
+                    <div data-value="540"></div>
+                    <div data-value="650"></div>
                 </div>
             </div>
             <div class="footer">
