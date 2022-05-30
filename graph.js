@@ -10,7 +10,6 @@ var jGraph = function (element) {
       overlay.width = overlay.clientWidth * scale;
       overlay.height = overlay.clientHeight * scale;
 
-      // Normalize coordinate system to use css pixels.
       ctx.scale(scale, scale);
     },
     renderLine: function (chart) {
@@ -19,15 +18,14 @@ var jGraph = function (element) {
       var secondaryColor =
         chart.getAttribute("data-secondary-color") || "black";
       var opacity = chart.getAttribute("data-opacity") || 1.0;
-      var segment = chart.getAttribute("data-segment") || true;
-      var fill = chart.getAttribute("data-fill") || false;
+      var segment = chart.getAttribute("data-segment") == "true" || true;
+      var fill = chart.getAttribute("data-fill") == "true" || false;
 
       chart.setAttribute(
         "style",
         `--primary-color: ${primaryColor}; --secondary-color: ${secondaryColor};--opacity:${opacity};`
       );
 
-      //create elements
       for (var i = 0; i < chart.children.length; i++) {
         var item = chart.children[i];
         var value = parseInt(item.getAttribute("data-value"));
@@ -38,7 +36,6 @@ var jGraph = function (element) {
           `--y: ${value}; --x: ${i};--z-index:${i * 100};`
         );
 
-        //event handler
         item.addEventListener("mouseover", function () {
           this.style.setProperty("--z-index", 10000);
         });
@@ -66,7 +63,9 @@ var jGraph = function (element) {
         }
       }
 
-      //create segement data
+      this.renderLineSegment(chart);
+    },
+    renderLineSegment: function (chart) {
       var width = this.element.getElementsByClassName("content")[0].clientWidth;
       var height =
         this.element.getElementsByClassName("content")[0].clientHeight;
@@ -214,7 +213,13 @@ var jGraph = function (element) {
       this.type = this.element.getAttribute("data-type") || "grid";
       this.minValue = parseInt(this.element.getAttribute("data-min-value"));
       this.maxValue = parseInt(this.element.getAttribute("data-max-value"));
+
       this.centered = this.element.classList.contains("centered");
+      if (this.element.getElementsByClassName("bar-chart").length > 0) {
+        this.centered = true;
+        this.element.classList.add("centered");
+      }
+
       this.labels = [];
 
       var range = Math.abs(this.maxValue) + Math.abs(this.minValue);
@@ -222,13 +227,11 @@ var jGraph = function (element) {
       this.element.style.width = this.width;
       this.element.style.height = this.height;
 
-      //header
       this.renderHeader();
 
-      //chart
       this.element.setAttribute(
         "style",
-        `${this.element.style.cssText};padding: 20px 20px 50px 50px;--widget-width:${this.width};--widget-height:${this.height};--gridcolor:lightgray;--range:${range};--max-y-value:${this.maxValue};`
+        `${this.element.style.cssText};padding: 0px 20px 40px 40px;--widget-width:${this.width};--widget-height:${this.height};--gridcolor:lightgray;--range:${range};--max-y-value:${this.maxValue};`
       );
 
       var content = this.element.getElementsByClassName("content")[0];
@@ -278,7 +281,6 @@ var jGraph = function (element) {
     },
 
     renderGrid: function (content) {
-      //X-Axis
       var xAxis = this.element.getElementsByClassName("xaxis")[0];
 
       var labels = xAxis.children.length;
@@ -301,7 +303,6 @@ var jGraph = function (element) {
         `${this.element.style.cssText};--max-x-value:${this.xMaxValue};`
       );
 
-      //Y-Axis
       var yAxis = this.element.getElementsByClassName("yaxis")[0];
 
       var min = this.minValue;
@@ -321,7 +322,6 @@ var jGraph = function (element) {
       var yaxissteps = count - 1;
       yAxis.setAttribute("style", `--steps:${yaxissteps}`);
 
-      //xgrid
       var xgrid = this.element.getElementsByClassName("xgrid")[0];
 
       count = 0;
@@ -337,15 +337,17 @@ var jGraph = function (element) {
 
       xgrid.setAttribute("style", `--steps:${yaxissteps}`);
 
-      //ygrid
+      var min_i = 0;
+      var max_i = xAxis.children.length + 1;
+
+      var maxx = xAxis.children.length;
+      if (!this.centered) maxx--;
       var ygrid = this.element.getElementsByClassName("ygrid")[0];
       ygrid.setAttribute(
         "style",
-        `--labels:${xAxis.children.length};--max-x-value:${xAxis.children.length}`
+        `--labels:${xAxis.children.length};--max-x-value:${maxx}`
       );
 
-      var min_i = 0;
-      var max_i = xAxis.children.length + 1;
       for (var i = min_i; i < max_i; i++) {
         var item = document.createElement("div");
 
@@ -357,19 +359,25 @@ var jGraph = function (element) {
         ygrid.appendChild(item);
       }
 
-      //render bars
       var barCharts = this.element.getElementsByClassName("bar-chart");
       for (var i = 0; i < barCharts.length; i++) {
         var chart = barCharts[i];
         this.renderBar(chart, i);
       }
 
-      //render lines
       var lineCharts = this.element.getElementsByClassName("line-chart");
       for (var i = 0; i < lineCharts.length; i++) {
         var chart = lineCharts[i];
         this.renderLine(chart);
       }
+
+      window.onresize = function () {
+        var lineCharts = this.element.getElementsByClassName("line-chart");
+        for (var i = 0; i < lineCharts.length; i++) {
+          var chart = lineCharts[i];
+          this.renderLineSegment(chart);
+        }
+      }.bind(this);
     },
   };
 
