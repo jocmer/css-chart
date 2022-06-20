@@ -18,8 +18,17 @@ var jGraph = function (element) {
       var secondaryColor =
         chart.getAttribute("data-secondary-color") || "black";
       var opacity = chart.getAttribute("data-opacity") || 1.0;
-      var segment = chart.getAttribute("data-segment") == "true" || true;
-      var fill = chart.getAttribute("data-fill") == "true" || false;
+      var point = chart.getAttribute("data-point");
+      if (!point) point = true;
+      else point = point == "true" ? true : false;
+
+      var segment = chart.getAttribute("data-segment");
+      if (!segment) segment = true;
+      else segment = segment == "true" ? true : false;
+
+      var fill = chart.getAttribute("data-fill");
+      if (!fill) fill = false;
+      else fill = fill == "true" ? true : false;
 
       chart.setAttribute(
         "style",
@@ -40,11 +49,13 @@ var jGraph = function (element) {
           this.style.setProperty("--z-index", 10000);
         });
 
-        var div_dp = document.createElement("div");
-        div_dp.classList.add("data-point");
-        div_dp.setAttribute("data-value", value);
-        div_dp.setAttribute("data-label", label);
-        item.appendChild(div_dp);
+        if (point) {
+          var div_dp = document.createElement("div");
+          div_dp.classList.add("data-point");
+          div_dp.setAttribute("data-value", value);
+          div_dp.setAttribute("data-label", label);
+          item.appendChild(div_dp);
+        }
 
         if (segment) {
           var div_ls = document.createElement("div");
@@ -94,12 +105,14 @@ var jGraph = function (element) {
           var hypo = Math.hypot(diff_x, diff_y);
           if (hypo) {
             var lineSegment = element.getElementsByClassName("line-segment")[0];
-            lineSegment.style.setProperty("--a", diff_x);
-            lineSegment.style.setProperty("--c", diff_y);
-            lineSegment.style.setProperty("--hypotenuse", hypo.toString());
+            if (lineSegment) {
+              lineSegment.style.setProperty("--a", diff_x);
+              lineSegment.style.setProperty("--c", diff_y);
+              lineSegment.style.setProperty("--hypotenuse", hypo.toString());
 
-            var angle = (Math.asin(diff_y / hypo) * 180) / Math.PI;
-            lineSegment.style.setProperty("--angle", angle.toString());
+              var angle = (Math.asin(diff_y / hypo) * 180) / Math.PI;
+              lineSegment.style.setProperty("--angle", angle.toString());
+            }
 
             var lineCurtain = element.getElementsByClassName("line-fill")[0];
             if (lineCurtain) {
@@ -169,7 +182,7 @@ var jGraph = function (element) {
         }
 
         item.onclick = function () {
-          var disabled = chart.getAttribute("data-disabled") || false;
+          var disabled = chart.getAttribute("data-disabled") == "true" || false;
           chart.setAttribute("data-disabled", !disabled);
 
           if (!disabled) {
@@ -207,12 +220,49 @@ var jGraph = function (element) {
         this.renderLegend(legend);
       }
     },
+    calculateMinMax: function(values, steps) {
+      var min = Math.min(...values);
+      var max = Math.max(...values);
+
+      this.maxValue = Math.ceil(max / steps) * steps;
+      this.minValue = Math.floor(min / steps) * steps;
+
+    },
+    calculateSteps: function(values) {
+      var min = Math.min(...values);
+      var max = Math.max(...values);
+      var range = Math.abs(min) + Math.abs(max);
+      var length = range.toString().length - 1;
+      var pow = Math.pow(10, length);
+      var floor = Math.floor(range / pow) * pow / 10;
+      this.steps = floor;
+    },
     render: function () {
       this.width = "100%";
       this.height = "100%";
       this.type = this.element.getAttribute("data-type") || "grid";
-      this.minValue = parseInt(this.element.getAttribute("data-min-value"));
-      this.maxValue = parseInt(this.element.getAttribute("data-max-value"));
+      this.minValue = parseInt(this.element.getAttribute("data-min-value")) || undefined;
+      this.maxValue = parseInt(this.element.getAttribute("data-max-value")) || undefined;
+
+      if(this.minValue == undefined || this.maxValue == undefined) {
+
+        var values = [];
+        var charts = this.element.querySelectorAll(".line-chart,.bar-chart");
+        charts.forEach(function (chart) {
+          for(var i = 0; i < chart.children.length;i++) {
+            var item = chart.children[i];
+            var value = parseFloat(item.getAttribute("data-value"));
+            values.push(value);
+          }
+        });
+
+        this.steps = parseInt(this.element.getElementsByClassName('yaxis')[0].getAttribute("data-steps")) || undefined;
+        if(this.steps == undefined) {
+          this.calculateSteps(values);
+        }
+
+        this.calculateMinMax(values, this.steps);
+      }
 
       this.centered = this.element.classList.contains("centered");
       if (this.element.getElementsByClassName("bar-chart").length > 0) {
@@ -307,7 +357,7 @@ var jGraph = function (element) {
 
       var min = this.minValue;
       var max = this.maxValue;
-      var steps = parseInt(yAxis.getAttribute("data-steps"));
+      var steps = this.steps;
 
       var count = 0;
       for (var i = min; i <= max; i = i + steps) {
