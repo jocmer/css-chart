@@ -55,7 +55,7 @@ body, html {
 }
 
 .css-chart {
-  --point-size: max(16px, min(4px,0.5vw));
+  --point-size: min(16px,max(4px,calc(1vw + 1vh)));
 
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
@@ -95,7 +95,7 @@ body, html {
 }
 
 .css-chart .header .legend .item {
-  padding: 2px 2px;
+  padding: 1px 2px;
   cursor: pointer;
 }
 
@@ -261,7 +261,7 @@ body, html {
   transition: 0.2s;
   content: attr(data-label) " " attr(data-value);
   color: var(--primary-color);
-  opacity: 0.8;
+  opacity: calc(var(--opacity) - 0.2);;
   padding: 5px;
   color: white;
   background: black;
@@ -287,14 +287,16 @@ body, html {
 
 .css-chart .line-chart .line-segment {
   background: var(--primary-color);
-  opacity: var(--opacity);
+  opacity: calc(var(--opacity) - 0.2);
 
   position: absolute;
 
   bottom: calc(var(--offset-y) + var(--y) / var(--range) * var(--grid-height));
   left: calc(var(--x) / var(--max-x-value) * var(--grid-width));
 
-  height: 3px;
+  --lineThickness: calc(var(--point-size) / 5);
+
+  height: var(--lineThickness);
   width: calc(var(--hypotenuse) * 1px);
 
   transform: rotate(calc(var(--angle) * 1deg));
@@ -306,7 +308,10 @@ body, html {
 
 .css-chart .line-chart .line-segment:hover {
   cursor: pointer;
-  height: 3px;
+
+  --lineThickness: calc(var(--point-size) / 4);
+
+  height: var(--lineThickness);
   opacity: 1;
 }
 
@@ -412,7 +417,6 @@ body, html {
 }
 
 .css-chart .yaxis div {
-  z-index: -1;
   font-size: 75%;
   position: absolute;
   bottom: calc(var(--i) * var(--grid-height) / var(--steps) - 10px);
@@ -421,7 +425,6 @@ body, html {
 }
 
 .css-chart .yaxis div:before {
-  z-index: -1;
   content: "";
   position: absolute;
   bottom: calc(50%);
@@ -439,7 +442,6 @@ body, html {
 }
 
 .css-chart .xgrid div {
-  z-index: -1;
   position: absolute;
   left: 0;
   bottom: calc(var(--i) * var(--grid-height) / var(--steps));
@@ -458,7 +460,6 @@ body, html {
 }
 
 .css-chart .ygrid div {
-  z-index: -1;
   position: absolute;
   bottom: 0;
   width: 1px;

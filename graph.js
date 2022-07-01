@@ -40,9 +40,17 @@ var jGraph = function (element) {
         var value = parseInt(item.getAttribute("data-value"));
         var label = this.labels[i];
 
+        var itemPrimaryColor =
+          item.getAttribute("data-primary-color") || primaryColor;
+        var itemSecondaryColor =
+          item.getAttribute("data-secondary-color") || secondaryColor;
+        var itemOpacity = item.getAttribute("data-opacity") || opacity;
+
         item.setAttribute(
           "style",
-          `--y: ${value}; --x: ${i};--z-index:${i * 100};`
+          `--primary-color: ${itemPrimaryColor}; --secondary-color: ${itemSecondaryColor};--opacity:${itemOpacity};--opacity:${opacity};--y: ${value}; --x: ${i};--z-index:${
+            i * 100
+          };`
         );
 
         item.addEventListener("mouseover", function () {
@@ -145,6 +153,7 @@ var jGraph = function (element) {
       var opacity = chart.getAttribute("data-opacity") || 1.0;
 
       var length = this.element.getElementsByClassName("bar-chart").length;
+
       chart.setAttribute(
         "style",
         `--primary-color: ${primaryColor};--secondary-color: ${secondaryColor};--opacity:${opacity};--i:${index};--items:${length};`
@@ -154,31 +163,54 @@ var jGraph = function (element) {
         var item = chart.children[i];
         var value = parseInt(item.getAttribute("data-value"));
         var label = this.labels[i];
-
-        item.setAttribute(
-          "style",
-          `--y: ${value}; --x: ${i};--z-index:${i * 100};`
-        );
+        var x = parseInt(item.getAttribute("data-index")) - 1 || i;
 
         if (value < 0) {
           item.classList.add("negative");
         }
         item.setAttribute(
           "style",
-          `--y: ${value}; --x: ${i};z-index:${-value + this.maxValue + 1}`
+          `--y: ${value}; --x: ${x};z-index:${-value + this.maxValue + 1}`
         );
         item.setAttribute("data-value", value);
         item.setAttribute("data-label", label);
       }
     },
     renderLegend: function (legend) {
-      var charts = this.element.querySelectorAll(".line-chart,.bar-chart");
+      var element = this.element;
+      var charts = element.querySelectorAll(".line-chart,.bar-chart");
       charts.forEach(function (chart, index) {
-        var item = document.createElement("div");
-        item.classList.add("item");
-        item.setAttribute("data-index", index);
-        if (chart.getAttribute("data-disabled")) {
-          item.classList.add("disabled");
+        var strLabel = chart.getAttribute("data-label");
+
+        var item = element.querySelectorAll(
+          `.legend .item[data-label="${strLabel}"]`
+        )[0];
+        if (!item) {
+          var item = document.createElement("div");
+          item.classList.add("item");
+          item.setAttribute("data-index", index);
+          item.setAttribute("data-label", strLabel);
+          if (chart.getAttribute("data-disabled")) {
+            item.classList.add("disabled");
+          }
+
+          var color = document.createElement("div");
+          color.classList.add("color");
+          color.style.backgroundColor =
+            chart.getAttribute("data-primary-color");
+          color.style.border = `1px solid ${chart.getAttribute(
+            "data-secondary-color"
+          )}`;
+          item.appendChild(color);
+
+          var label = document.createElement("span");
+          label.classList.add("label");
+          var text = document.createTextNode(strLabel);
+          label.appendChild(text);
+
+          item.appendChild(label);
+
+          legend.appendChild(item);
         }
 
         item.onclick = function () {
@@ -193,23 +225,6 @@ var jGraph = function (element) {
             chart.classList.remove("disabled");
           }
         };
-
-        var color = document.createElement("div");
-        color.classList.add("color");
-        color.style.backgroundColor = chart.getAttribute("data-primary-color");
-        color.style.border = `1px solid ${chart.getAttribute(
-          "data-secondary-color"
-        )}`;
-        item.appendChild(color);
-
-        var label = document.createElement("span");
-        label.classList.add("label");
-        var text = document.createTextNode(chart.getAttribute("data-label"));
-        label.appendChild(text);
-
-        item.appendChild(label);
-
-        legend.appendChild(item);
       });
 
       return legend;
@@ -220,48 +235,76 @@ var jGraph = function (element) {
         this.renderLegend(legend);
       }
     },
-    calculateMinMax: function(values, steps) {
+    calculateMinMax: function (values, steps) {
       var min = Math.min(...values);
       var max = Math.max(...values);
 
-      this.maxValue = Math.ceil(max / steps) * steps;
-      this.minValue = Math.floor(min / steps) * steps;
+      var minValue = Math.floor(min / steps) * steps;
+      var maxValue = Math.ceil(max / steps) * steps;
 
+      return [minValue, maxValue];
     },
-    calculateSteps: function(values) {
+    adjustMinMax: function(minValue, maxValue) {
+      var absMinMaxValue = Math.max(Math.abs(minValue), Math.abs(maxValue));
+      
+      if(Math.abs(minValue) < absMinMaxValue) {
+        if(minValue < 0) {
+          minValue = -absMinMaxValue;
+        }
+      }
+
+      if(Math.abs(maxValue) < absMinMaxValue) {
+        if(maxValue < 0) {
+          maxValue = -absMinMaxValue;
+        }
+      }
+
+      return [minValue,maxValue];
+    },
+    calculateSteps: function (values) {
       var min = Math.min(...values);
       var max = Math.max(...values);
       var range = Math.abs(min) + Math.abs(max);
       var length = range.toString().length - 1;
       var pow = Math.pow(10, length);
-      var floor = Math.floor(range / pow) * pow / 10;
-      this.steps = floor;
+      var floor = (Math.floor(range / pow) * pow) / 10;
+      return floor;
     },
     render: function () {
       this.width = "100%";
       this.height = "100%";
       this.type = this.element.getAttribute("data-type") || "grid";
-      this.minValue = parseInt(this.element.getAttribute("data-min-value")) || undefined;
-      this.maxValue = parseInt(this.element.getAttribute("data-max-value")) || undefined;
+      this.minValue =
+        parseInt(this.element.getAttribute("data-min-value")) || undefined;
+      this.maxValue =
+        parseInt(this.element.getAttribute("data-max-value")) || undefined;
 
-      if(this.minValue == undefined || this.maxValue == undefined) {
-
+      if (this.minValue == undefined || this.maxValue == undefined) {
         var values = [];
         var charts = this.element.querySelectorAll(".line-chart,.bar-chart");
         charts.forEach(function (chart) {
-          for(var i = 0; i < chart.children.length;i++) {
+          for (var i = 0; i < chart.children.length; i++) {
             var item = chart.children[i];
             var value = parseFloat(item.getAttribute("data-value"));
             values.push(value);
           }
         });
 
-        this.steps = parseInt(this.element.getElementsByClassName('yaxis')[0].getAttribute("data-steps")) || undefined;
-        if(this.steps == undefined) {
-          this.calculateSteps(values);
+        this.steps =
+          parseInt(
+            this.element
+              .getElementsByClassName("yaxis")[0]
+              .getAttribute("data-steps")
+          ) || undefined;
+        if (this.steps == undefined) {
+          this.steps = this.calculateSteps(values);
         }
 
-        this.calculateMinMax(values, this.steps);
+        var minMax = this.calculateMinMax(values, this.steps);
+        minMax = this.adjustMinMax(minMax[0], minMax[1]);
+
+        this.minValue = minMax[0];
+        this.maxValue = minMax[1];
       }
 
       this.centered = this.element.classList.contains("centered");
@@ -281,11 +324,14 @@ var jGraph = function (element) {
 
       this.element.setAttribute(
         "style",
-        `${this.element.style.cssText};padding: 0px 20px 40px 40px;--widget-width:${this.width};--widget-height:${this.height};--gridcolor:lightgray;--range:${range};--max-y-value:${this.maxValue};`
+        `${this.element.style.cssText};padding: 0px 1vw 5vh 2vw;--widget-width:${this.width};--widget-height:${this.height};--gridcolor:lightgray;--range:${range};--max-y-value:${this.maxValue};`
       );
 
       var content = this.element.getElementsByClassName("content")[0];
-      content.setAttribute("style", `--grid-width: 100%;--grid-height:100%;`);
+      content.setAttribute(
+        "style",
+        `${content.style.cssText};--grid-width: 100%;--grid-height:100%;`
+      );
 
       switch (this.type) {
         case "grid":
@@ -373,19 +419,20 @@ var jGraph = function (element) {
       yAxis.setAttribute("style", `--steps:${yaxissteps}`);
 
       var xgrid = this.element.getElementsByClassName("xgrid")[0];
-
-      count = 0;
-      for (var i = min; i <= max; i = i + steps) {
-        var item = document.createElement("div");
-        if (i == 0) {
-          item.classList.add("thicc");
+      if (xgrid) {
+        count = 0;
+        for (var i = min; i <= max; i = i + steps) {
+          var item = document.createElement("div");
+          if (i == 0) {
+            item.classList.add("thicc");
+          }
+          item.setAttribute("style", `--i:${count}`);
+          xgrid.appendChild(item);
+          count++;
         }
-        item.setAttribute("style", `--i:${count}`);
-        xgrid.appendChild(item);
-        count++;
-      }
 
-      xgrid.setAttribute("style", `--steps:${yaxissteps}`);
+        xgrid.setAttribute("style", `--steps:${yaxissteps}`);
+      }
 
       var min_i = 0;
       var max_i = xAxis.children.length + 1;
@@ -393,20 +440,22 @@ var jGraph = function (element) {
       var maxx = xAxis.children.length;
       if (!this.centered) maxx--;
       var ygrid = this.element.getElementsByClassName("ygrid")[0];
-      ygrid.setAttribute(
-        "style",
-        `--labels:${xAxis.children.length};--max-x-value:${maxx}`
-      );
+      if (ygrid) {
+        ygrid.setAttribute(
+          "style",
+          `--labels:${xAxis.children.length};--max-x-value:${maxx}`
+        );
 
-      for (var i = min_i; i < max_i; i++) {
-        var item = document.createElement("div");
+        for (var i = min_i; i < max_i; i++) {
+          var item = document.createElement("div");
 
-        if (i == 0) {
-          item.classList.add("thicc");
+          if (i == 0) {
+            item.classList.add("thicc");
+          }
+
+          item.setAttribute("style", `--i:${i}`);
+          ygrid.appendChild(item);
         }
-
-        item.setAttribute("style", `--i:${i}`);
-        ygrid.appendChild(item);
       }
 
       var barCharts = this.element.getElementsByClassName("bar-chart");
